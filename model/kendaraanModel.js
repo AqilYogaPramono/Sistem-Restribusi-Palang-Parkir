@@ -77,6 +77,19 @@ class kendaraanModel {
             )
         })
     }
+
+    static async getParkirIncome() {
+        return new Promise((resolve, reject) => {
+            connection.query(`SELECT SUM(biaya) AS total_income from kendaraan where jam_keluar is not null`, (err, rows) => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(rows)
+                    }
+                }
+            )
+        })
+    }
 }
 
 module.exports = kendaraanModel
