@@ -103,6 +103,19 @@ class kendaraanModel {
             )
         })
     }
+
+    static async getIncomeThisMounth() {
+        return new Promise((resolve, reject) => {
+            connection.query(`select SUM(biaya) as total_income_this_month  FROM kendaraan WHERE jam_keluar is not NULL  and MONTH(tanggal_parkir) = MONTH(CURDATE()) and YEAR(tanggal_parkir) = YEAR(CURDATE()) `, (err, rows) => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(rows)
+                    }
+                }
+            )
+        })
+    }
 }
 
 module.exports = kendaraanModel

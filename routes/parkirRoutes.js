@@ -126,6 +126,15 @@ router.get('/parkir_income_today', verifyToken, async (req, res, next) => {
         res.status(500).json({message: error.message})
     }
 })
+
 //get total income this mouth (jwt, cache, enc) 
+router.get('/laporan/total-income/month', verifyToken, async (req, res, next) => {
+    try {
+        let rows = await kendaraanModel.getIncomeThisMounth()
+        return res.status(200).json({rows})
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
 
 module.exports = router
