@@ -98,6 +98,15 @@ router.get('/parkir_in', verifyToken, async (req, res, next) => {
 })
 
 //get parkir out (jwt, cache) 
+router.get('/parkir_out', verifyToken, async (req, res, next) => {
+    try {
+        let rows = await kendaraanModel.getParkirOut()
+        return res.status(200).json({rows})
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
+
 //get total income (jwt, cache, enc) 
 //get total income today (jwt, enc) 
 //get total income this mouth (jwt, cache, enc) 
