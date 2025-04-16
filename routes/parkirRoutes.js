@@ -5,6 +5,7 @@ var verifyToken = require('../config/middleware/jwt')
 var hitungBiayaParkir = require('../config/middleware/hitungBiayaParkir')
 const NodeCache = require('node-cache')
 const cache = new NodeCache({ stdTTL: 60})
+const cacheMiddleware = require('../config/middleware/cacheMiddleware')
 
 //parkir in (queue) 
 router.post('/parkir_in', verifyToken, async (req, res, next) => {
@@ -80,7 +81,7 @@ router.patch('/parkir_out/:id', verifyToken, async (req, res, next) =>  {
 // })
 
 //get all parkir in & out (jwt, cache) 
-router.get('/parkir', verifyToken, async (req, res, next) => {
+router.get('/parkir', cacheMiddleware, verifyToken, async (req, res, next) => {
     try {
         let rows = await kendaraanModel.getAllParkirIAll()
         return res.status(200).json({rows})
@@ -90,7 +91,7 @@ router.get('/parkir', verifyToken, async (req, res, next) => {
 })
 
 //get parkir in  (jwt, cache) 
-router.get('/parkir/in', verifyToken, async (req, res, next) => {
+router.get('/parkir/in', cacheMiddleware, verifyToken, async (req, res, next) => {
     try {
         let rows = await kendaraanModel.getParkirIn()
         return res.status(200).json({rows})
@@ -100,7 +101,7 @@ router.get('/parkir/in', verifyToken, async (req, res, next) => {
 })
 
 //get parkir out (jwt, cache) 
-router.get('/parkir/out', verifyToken, async (req, res, next) => {
+router.get('/parkir/out', cacheMiddleware, verifyToken, async (req, res, next) => {
     try {
         let rows = await kendaraanModel.getParkirOut()
         return res.status(200).json({rows})
@@ -110,7 +111,7 @@ router.get('/parkir/out', verifyToken, async (req, res, next) => {
 })
 
 //get total income (jwt, cache, enc) 
-router.get('/laporan/income', verifyToken, async (req, res, next) => {
+router.get('/laporan/income', cacheMiddleware, verifyToken, async (req, res, next) => {
     try {
         const cacheKey = 'total income'
         let cacheData = cache.get(cacheKey)
@@ -138,7 +139,7 @@ router.get('/laporan/total-income/today', verifyToken, async (req, res, next) =>
 })
 
 //get total income this mouth (jwt, cache, enc) 
-router.get('/laporan/total-income/month', verifyToken, async (req, res, next) => {
+router.get('/laporan/total-income/month', cacheMiddleware, verifyToken, async (req, res, next) => {
     try {
         let rows = await kendaraanModel.getIncomeThisMounth()
         return res.status(200).json({rows})
