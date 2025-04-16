@@ -14,9 +14,22 @@ class kendaraanModel {
         })
     }
 
-    static async getLicensePlate(nomerPolosi) {
+    static async parkirOut(data) {
+        return new Promise((resolve, reject) => {
+            connection.query(`UPDATE kendaraan  SET jam_keluar = ?,  biaya = ?  WHERE id = ?`, data, (err, result) => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(result)
+                    }
+                }
+            )
+        })
+    }
+
+    static async getJamMasuk(data) {
         return new Promise ((resolve, reject) => {
-            connection.query('select no_pol from kendaraan where no_pol = ?',[nomerPolosi], (err, rows) => {
+            connection.query('SELECT jam_masuk FROM kendaraan WHERE id = ?',[data], (err, rows) => {
                 if (err) {
                     reject(err)
                 } else {
