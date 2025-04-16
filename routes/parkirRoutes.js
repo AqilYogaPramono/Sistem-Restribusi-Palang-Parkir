@@ -3,6 +3,8 @@ var router = express.Router()
 var kendaraanModel = require('../model/kendaraanModel')
 var verifyToken = require('../config/middleware/jwt')
 var hitungBiayaParkir = require('../config/middleware/hitungBiayaParkir')
+const NodeCache = require('node-cache')
+const cache = new NodeCache({ stdTTL: 60})
 
 //parkir in (queue) 
 router.post('/parkir_in', verifyToken, async (req, res, next) => {
@@ -110,8 +112,16 @@ router.get('/parkir/out', verifyToken, async (req, res, next) => {
 //get total income (jwt, cache, enc) 
 router.get('/laporan/income', verifyToken, async (req, res, next) => {
     try {
+        const cacheKey = 'total income'
+        let cacheData = cache.get(cacheKey)
+    
+        if (cacheData) {
+            return res.status(200).json({message: 'Using Cache', cacheData})
+        }
+
         let rows = await kendaraanModel.getIncome()
-        return res.status(200).json({rows})
+        cache.set(cacheKey, rows, 60)
+        return res.status(200).json({message: 'Non Cache', rows})
     } catch (error) {
         res.status(500).json({message: error.message})
     }
