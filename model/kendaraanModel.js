@@ -90,6 +90,19 @@ class kendaraanModel {
             )
         })
     }
+
+    static async getParkirIncomeToday() {
+        return new Promise((resolve, reject) => {
+            connection.query(`select SUM(biaya) as total_income_today  from kendaraan WHERE jam_keluar is not null and tanggal_parkir = CURDATE()`, (err, rows) => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(rows)
+                    }
+                }
+            )
+        })
+    }
 }
 
 module.exports = kendaraanModel
