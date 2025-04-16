@@ -64,6 +64,19 @@ class kendaraanModel {
             )
         })
     }
+
+    static async getParkirOut() {
+        return new Promise((resolve, reject) => {
+            connection.query(`select * from kendaraan where jam_keluar is not null`, (err, rows) => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(rows)
+                    }
+                }
+            )
+        })
+    }
 }
 
 module.exports = kendaraanModel
