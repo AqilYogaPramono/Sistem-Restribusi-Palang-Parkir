@@ -38,6 +38,19 @@ class kendaraanModel {
             })
         })
     }
+
+    static async getAllParkirInAndOutetAll() {
+        return new Promise((resolve, reject) => {
+            connection.query(`select * from kendaraan;`, (err, rows) => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(rows)
+                    }
+                }
+            )
+        })
+    }
 }
 
 module.exports = kendaraanModel
