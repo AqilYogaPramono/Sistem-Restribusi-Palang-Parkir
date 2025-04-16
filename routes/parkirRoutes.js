@@ -78,7 +78,7 @@ router.patch('/parkir_out/:id', verifyToken, async (req, res, next) =>  {
 // })
 
 //get all parkir in & out (jwt, cache) 
-router.get('/parkir_id_out', verifyToken, async (req, res, next) => {
+router.get('/parkir_in_out', verifyToken, async (req, res, next) => {
     try {
         let rows = await kendaraanModel.getAllParkirInAndOutetAll()
         return res.status(200).json({rows})
@@ -88,6 +88,15 @@ router.get('/parkir_id_out', verifyToken, async (req, res, next) => {
 })
 
 //get parkir in  (jwt, cache) 
+router.get('/parkir_in', verifyToken, async (req, res, next) => {
+    try {
+        let rows = await kendaraanModel.getParkirIn()
+        return res.status(200).json({rows})
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
+
 //get parkir out (jwt, cache) 
 //get total income (jwt, cache, enc) 
 //get total income today (jwt, enc) 
