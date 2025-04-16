@@ -78,11 +78,19 @@ router.patch('/parkir_out/:id', verifyToken, async (req, res, next) =>  {
 // })
 
 //get all parkir in & out (jwt, cache) 
-//get all parkir in & out (jwt, cache) 
+router.get('/parkir_id_out', verifyToken, async (req, res, next) => {
+    try {
+        let rows = await kendaraanModel.getAllParkirInAndOutetAll()
+        return res.status(200).json({rows})
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
+
 //get parkir in  (jwt, cache) 
 //get parkir out (jwt, cache) 
 //get total income (jwt, cache, enc) 
 //get total income today (jwt, enc) 
-//get total income thiis mouth (jwt, cache, enc) 
+//get total income this mouth (jwt, cache, enc) 
 
 module.exports = router
