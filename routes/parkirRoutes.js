@@ -78,9 +78,9 @@ router.patch('/parkir_out/:id', verifyToken, async (req, res, next) =>  {
 // })
 
 //get all parkir in & out (jwt, cache) 
-router.get('/parkir_in_out', verifyToken, async (req, res, next) => {
+router.get('/parkir', verifyToken, async (req, res, next) => {
     try {
-        let rows = await kendaraanModel.getAllParkirInAndOutetAll()
+        let rows = await kendaraanModel.getAllParkirIAll()
         return res.status(200).json({rows})
     } catch (error) {
         res.status(500).json({message: error.message})
@@ -88,7 +88,7 @@ router.get('/parkir_in_out', verifyToken, async (req, res, next) => {
 })
 
 //get parkir in  (jwt, cache) 
-router.get('/parkir_in', verifyToken, async (req, res, next) => {
+router.get('/parkir/in', verifyToken, async (req, res, next) => {
     try {
         let rows = await kendaraanModel.getParkirIn()
         return res.status(200).json({rows})
@@ -98,7 +98,7 @@ router.get('/parkir_in', verifyToken, async (req, res, next) => {
 })
 
 //get parkir out (jwt, cache) 
-router.get('/parkir_out', verifyToken, async (req, res, next) => {
+router.get('/parkir/out', verifyToken, async (req, res, next) => {
     try {
         let rows = await kendaraanModel.getParkirOut()
         return res.status(200).json({rows})
@@ -108,9 +108,9 @@ router.get('/parkir_out', verifyToken, async (req, res, next) => {
 })
 
 //get total income (jwt, cache, enc) 
-router.get('/parkir_income', verifyToken, async (req, res, next) => {
+router.get('/laporan/income', verifyToken, async (req, res, next) => {
     try {
-        let rows = await kendaraanModel.getParkirIncome()
+        let rows = await kendaraanModel.getIncome()
         return res.status(200).json({rows})
     } catch (error) {
         res.status(500).json({message: error.message})
@@ -118,9 +118,9 @@ router.get('/parkir_income', verifyToken, async (req, res, next) => {
 })
 
 //get total income today (jwt, enc) 
-router.get('/parkir_income_today', verifyToken, async (req, res, next) => {
+router.get('/laporan/total-income/today', verifyToken, async (req, res, next) => {
     try {
-        let rows = await kendaraanModel.getParkirIncomeToday()
+        let rows = await kendaraanModel.getIncomeToday()
         return res.status(200).json({rows})
     } catch (error) {
         res.status(500).json({message: error.message})

@@ -39,7 +39,7 @@ class kendaraanModel {
         })
     }
 
-    static async getAllParkirInAndOutetAll() {
+    static async getAllParkirIAll() {
         return new Promise((resolve, reject) => {
             connection.query(`select * from kendaraan`, (err, rows) => {
                     if (err) {
@@ -78,7 +78,7 @@ class kendaraanModel {
         })
     }
 
-    static async getParkirIncome() {
+    static async getIncome() {
         return new Promise((resolve, reject) => {
             connection.query(`SELECT SUM(biaya) AS total_income from kendaraan where jam_keluar is not null`, (err, rows) => {
                     if (err) {
@@ -91,7 +91,7 @@ class kendaraanModel {
         })
     }
 
-    static async getParkirIncomeToday() {
+    static async getIncomeToday() {
         return new Promise((resolve, reject) => {
             connection.query(`select SUM(biaya) as total_income_today  from kendaraan WHERE jam_keluar is not null and tanggal_parkir = CURDATE()`, (err, rows) => {
                     if (err) {
