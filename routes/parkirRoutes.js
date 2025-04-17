@@ -6,6 +6,8 @@ var hitungBiayaParkir = require('../config/middleware/hitungBiayaParkir')
 const NodeCache = require('node-cache')
 const cache = new NodeCache({ stdTTL: 60})
 const cacheMiddleware = require('../config/middleware/cacheMiddleware')
+const { parkirQueue } = require('../config/middleware/queue')
+const { encryptData, decryptData } = require('../config/middleware/crypto')
 
 //parkir in (queue) 
 router.post('/parkir_in', verifyToken, async (req, res, next) => {
@@ -22,7 +24,9 @@ router.post('/parkir_in', verifyToken, async (req, res, next) => {
 
         let data = [ nomerPolosi, nomerParkir, petugasId ]
 
-        await kendaraanModel.parkirIn(data)
+        const job = await parkirQueue.add({ action: 'store', data })
+        await job.finished()
+
         res.status(201).json({message: 'CREATED'})
     } catch (error) {
         res.status(500).json({ message: error.message})
@@ -132,11 +136,24 @@ router.get('/laporan/income', cacheMiddleware, verifyToken, async (req, res, nex
 router.get('/laporan/total-income/today', verifyToken, async (req, res, next) => {
     try {
         let rows = await kendaraanModel.getIncomeToday()
-        return res.status(200).json({rows})
+        
+        // Enkripsi data
+        const encrypted = encryptData(rows)
+        console.log('Encrypted Data:', encrypted)
+
+        // Dekripsi data
+        const decrypted = decryptData(encrypted)
+        console.log('Decrypted Data:', decrypted)
+
+        return res.status(200).json({
+            encryptedData: encrypted,
+            decryptedData: decrypted
+        })
     } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({ message: error.message })
     }
 })
+
 
 //get total income this mouth (jwt, cache, enc) 
 router.get('/laporan/total-income/month', cacheMiddleware, verifyToken, async (req, res, next) => {
