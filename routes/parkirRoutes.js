@@ -6,7 +6,7 @@ var hitungBiayaParkir = require('../config/middleware/hitungBiayaParkir')
 const NodeCache = require('node-cache')
 const cache = new NodeCache({ stdTTL: 60})
 const cacheMiddleware = require('../config/middleware/cacheMiddleware')
-const { parkirQueue } = require('../config/middleware/queue')
+const { parkirQueue } = require('../jobs/worker')
 const { encryptData, decryptData } = require('../config/middleware/crypto')
 
 //parkir in (queue) 
@@ -51,7 +51,8 @@ router.patch('/parkir_out/:id', verifyToken, async (req, res, next) =>  {
 
         let data = [jamKeluar, totalBiaya, id]
 
-        await kendaraanModel.parkirOut(data)
+        const job = await parkirQueue.add({ action: 'update', data })
+        await job.finished()
 
         res.status(200).json({message: 'ok'})
     } catch (error) {
@@ -76,7 +77,8 @@ router.patch('/parkir_out/:id', verifyToken, async (req, res, next) =>  {
 
 //         let data = [jamKeluar, totalBiaya, id]
 
-//         await kendaraanModel.parkirOut(data)
+//         const job = await parkirQueue.add({ action: 'update', data })
+//         await job.finished()
 
 //         res.status(200).json({message: 'ok'})
 //     } catch (error) {
@@ -115,18 +117,24 @@ router.get('/parkir/out', cacheMiddleware, verifyToken, async (req, res, next) =
 })
 
 //get total income (jwt, cache, enc) 
-router.get('/laporan/income', cacheMiddleware, verifyToken, async (req, res, next) => {
+router.get('/laporan/income', verifyToken, async (req, res, next) => {
     try {
         const cacheKey = 'total income'
         let cacheData = cache.get(cacheKey)
     
         if (cacheData) {
-            return res.status(200).json({message: 'Using Cache', cacheData})
+            const { encrypted, decrypted } = cacheData;
+            return res.status(200).json({message: 'Using Cache', ncryptedData: encrypted,  decryptedData: decrypted})
         }
 
         let rows = await kendaraanModel.getIncome()
-        cache.set(cacheKey, rows, 60)
-        return res.status(200).json({message: 'Non Cache', rows})
+        const encrypted = encryptData(rows)
+        const decrypted = decryptData(encrypted)
+
+        cache.set(cacheKey, {encrypted, decrypted})
+
+        return res.status(200).json({message: 'Non Cache', encryptedData: encrypted, decryptedData: decrypted })
+
     } catch (error) {
         res.status(500).json({message: error.message})
     }
@@ -137,18 +145,12 @@ router.get('/laporan/total-income/today', verifyToken, async (req, res, next) =>
     try {
         let rows = await kendaraanModel.getIncomeToday()
         
-        // Enkripsi data
         const encrypted = encryptData(rows)
-        console.log('Encrypted Data:', encrypted)
 
-        // Dekripsi data
         const decrypted = decryptData(encrypted)
-        console.log('Decrypted Data:', decrypted)
 
-        return res.status(200).json({
-            encryptedData: encrypted,
-            decryptedData: decrypted
-        })
+        return res.status(200).json({encryptedData: encrypted, decryptedData: decrypted })
+
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
@@ -159,7 +161,12 @@ router.get('/laporan/total-income/today', verifyToken, async (req, res, next) =>
 router.get('/laporan/total-income/month', cacheMiddleware, verifyToken, async (req, res, next) => {
     try {
         let rows = await kendaraanModel.getIncomeThisMounth()
-        return res.status(200).json({rows})
+
+        const encrypted = encryptData(rows)
+
+        const decrypted = decryptData(encrypted)
+
+        return res.status(200).json({ encryptedData: encrypted, decryptedData: decrypted })
     } catch (error) {
         res.status(500).json({message: error.message})
     }

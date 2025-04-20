@@ -2,7 +2,7 @@ const kendaraanModel = require('../model/kendaraanModel')
 const { parkirQueue } = require('../config/middleware/queue');
 
 parkirQueue.process(async (job) => {
-    const { action, data } = job.data
+    const { id, action, data } = job.data
     console.log(`Memproses antrian parkir..., Action: ${action})`)
 
     if (action === 'store') {
@@ -17,3 +17,5 @@ parkirQueue.process(async (job) => {
 })
 
 console.log("Worker berjalan dan siap memproses banyak antrian...");
+
+module.exports = { parkirQueue };
